@@ -1,48 +1,79 @@
-import React from 'react'
-import './App.css'
+import React, { useState } from 'react';
+import { ShoppingItem } from './components/ShoppingItem';
 
 function App() {
+  const [items, setItems] = useState([
+    { id: 1, name: 'Молоко', price: 80 },
+    { id: 2, name: 'Хлеб', price: 35 },
+  ]);
+
+  const [name, setName] = useState('');
+  const [price, setPrice] = useState('');
+
+  const handleAddItem = (e) => {
+    e.preventDefault();
+    if (!name.trim() || !price) return;
+
+    const newItem = {
+      id: Date.now(),
+      name: name,
+      price: Number(price),
+    };
+
+    setItems([...items, newItem]);
+    setName('');
+    setPrice('');
+  };
+
+  const handleDeleteItem = (id) => {
+    setItems(items.filter(item => item.id !== id));
+  };
+
+  const totalPrice = items.reduce((sum, item) => sum + item.price, 0);
+
   return (
-    <div className="container">
-      <header className="header">
-        <h1>Тургамбеков Доолот</h1>
-        <p className="subtitle">Студент КГИПИ | React / Java / Web Developer</p>
-      </header>
+    <div style={{ maxWidth: '400px', margin: '40px auto', fontFamily: 'Arial, sans-serif' }}>
+      <h2>Список покупок</h2>
 
-      <section className="card">
-        <h2>О себе</h2>
-        <p>
-          Люблю читать достойные книги. Изучаю Java, PostgreSQL и современную веб-разработку (React, JS, HTML/CSS).
-        </p>
-      </section>
+      <form onSubmit={handleAddItem} style={{ display: 'flex', gap: '8px', marginBottom: '20px' }}>
+        <input
+          type="text"
+          placeholder="Название товара"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          style={{ flex: 2, padding: '6px' }}
+        />
+        <input
+          type="number"
+          placeholder="Цена"
+          value={price}
+          onChange={(e) => setPrice(e.target.value)}
+          style={{ flex: 1, padding: '6px' }}
+        />
+        <button type="submit" style={{ padding: '6px 12px', cursor: 'pointer' }}>Добавить</button>
+      </form>
 
-      <section className="card">
-        <h2>Навыки и технологии</h2>
-        <div className="skills-list">
-          <span className="skill-tag">Java</span>
-          <span className="skill-tag">PostgreSQL</span>
-          <span className="skill-tag">React</span>
-          <span className="skill-tag">JavaScript</span>
-          <span className="skill-tag">HTML5 / CSS3</span>
-          <span className="skill-tag">Git / GitHub</span>
-        </div>
-      </section>
+      <div>
+        {items.length === 0 ? (
+          <p>Список пуст</p>
+        ) : (
+          items.map(item => (
+            <ShoppingItem
+              key={item.id}
+              id={item.id}
+              name={item.name}
+              price={item.price}
+              onDelete={handleDeleteItem}
+            />
+          ))
+        )}
+      </div>
 
-      <section className="card">
-        <h2>Образование</h2>
-        <p><strong>КГИПИ (INAI)</strong> программные технологии </p>
-      </section>
-
-      <section className="card">
-        <h2>Контакты</h2>
-        <div className="contacts">
-          <p>📧 Email: <a href="mailto:turgambekovdoolot@gmail.com">turgambekovdoolot@gmail.com</a></p>
-          <p>📸 Instagram: <a href="https://www.instagram.com/turgambekovd_/" target="_blank" rel="noreferrer">@turgambekovd_</a></p>
-          <p>💻 GitHub: <a href="https://github.com/Doolot999" target="_blank" rel="noreferrer">github.com/Doolot999</a></p>
-        </div>
-      </section>
+      <div style={{ marginTop: '20px', fontSize: '18px', fontWeight: 'bold', borderTop: '2px solid #333', paddingTop: '10px' }}>
+        Общая стоимость: {totalPrice} сом
+      </div>
     </div>
-  )
+  );
 }
 
-export default App
+export default App;
